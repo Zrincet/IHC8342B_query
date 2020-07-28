@@ -1,0 +1,10 @@
+{
+  "domain": "IHC8342B_query",
+  "name": "IHC8342B electricity query",
+  "documentation": "https://github.com/zrincet/IHC8342B_query",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": [
+    "@zrincet"
+  ]
+}

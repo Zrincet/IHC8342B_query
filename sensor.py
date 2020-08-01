@@ -155,23 +155,58 @@ class IHC8342BSensor(Entity):
                 self._state = self._power
 
             elif self._type == "eleMonth":
-                if len(re_json['table'][0]['values']) == 1:
+                # 当今天为1号时的特殊处理
+                if timeNow.day == 1:
+                    endEle = float(re_json['table'][0]['values'][-1]['elec']) / 100
+                    data['report'] = 'fw_hydayelec_v1'
+                    data['device'][0]['start'] = timeNow.strftime("%Y-%m-01_00:00:00")
+                    data['device'][0]['end'] = timeNow.strftime("%Y-%m-01_23:59:59")
+
+                    try:
+                        response = requests.post(url, headers=header, json=data)
+                        re_json = json.loads(response.text)
+                    except (ConnectError, HTTPError, Timeout, ValueError) as error:
+                        time.sleep(0.01)
+                        _LOGGER.error("Unable to connect to HonYar server. %s", error)
+
+                    startEle = float(re_json['table'][0]['values'][0]['elec']) / 100
+
+                    self._eleMonth = round(endEle - startEle, 2)
+
+                # 新插排第一天入网的情况
+                elif len(re_json['table'][0]['values']) == 1:
                     self._eleMonth = float(re_json['table'][0]['values'][0]['elec']) / 100
+
                 else:
                     self._eleMonth = round(float(re_json['table'][0]['values'][-1]['elec']) / 100 - float(
                         re_json['table'][0]['values'][0]['elec']) / 100, 2)
                 self._state = self._eleMonth
-                self._dataTime = str(re_json['table'][0]['values'][0]['occurtime']).split("_")[0] + \
-                                 str(re_json['table'][0]['values'][-1]['occurtime']).split("_")[0]
+                self._dataTime = str(re_json['table'][0]['values'][0]['occurtime']).split("_")[0] + " - " + str(
+                    re_json['table'][0]['values'][-1]['occurtime']).split("_")[0]
 
             elif self._type == "eleYear":
                 if len(re_json['table'][0]['values']) == 1:
                     self._eleYear = float(re_json['table'][0]['values'][0]['elec']) / 100
                 else:
-                    self._eleYear = round(float(re_json['table'][0]['values'][-1]['elec']) / 100 - float(
-                        re_json['table'][0]['values'][0]['elec']) / 100, 2)
+                    endEle = float(re_json['table'][0]['values'][-1]['elec']) / 100
+                    startMonth = str(re_json['table'][0]['values'][0]['occurtime']).split("-")[1]
+                    data['report'] = 'fw_hymonthelec_v1'
+                    data['device'][0]['start'] = timeNow.strftime("%Y-month-01_00:00:00").replace("month", startMonth)
+                    monthRange = calendar.monthrange(timeNow.year, int(startMonth))[1]
+                    data['device'][0]['end'] = timeNow.strftime("%Y-month-day_23:59:59").replace("day", str(monthRange)).replace("month", startMonth)
+
+                    try:
+                        response = requests.post(url, headers=header, json=data)
+                        re_json = json.loads(response.text)
+                    except (ConnectError, HTTPError, Timeout, ValueError) as error:
+                        time.sleep(0.01)
+                        _LOGGER.error("Unable to connect to HonYar server. %s", error)
+
+                    startEle = float(re_json['table'][0]['values'][0]['elec']) / 100
+
+                    self._eleYear = round(endEle-startEle, 2)
                 self._state = self._eleYear
-                self._dataTime = str(re_json['table'][0]['values'][0]['occurtime']).split("_")[0] + str(
+                self._dataTime = str(re_json['table'][0]['values'][0]['occurtime']).split("_")[0] + " - " + str(
                     re_json['table'][0]['values'][-1]['occurtime']).split("_")[0]
 
         except Exception as e:

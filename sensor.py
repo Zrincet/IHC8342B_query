@@ -21,7 +21,7 @@ from requests.exceptions import (
 from bs4 import BeautifulSoup
 import json
 
-__version__ = '0.1.0'
+__version__ = '1.1.2'
 _LOGGER = logging.getLogger(__name__)
 
 REQUIREMENTS = ['requests', 'beautifulsoup4']
@@ -155,8 +155,8 @@ class IHC8342BSensor(Entity):
                 self._state = self._power
 
             elif self._type == "eleMonth":
-                # 当今天为1号时的特殊处理
-                if timeNow.day == 1:
+                # 当今天为1号时按照普通情况处理
+                if timeNow.day == 1 or len(re_json['table'][0]['values']) != 1:
                     endEle = float(re_json['table'][0]['values'][-1]['elec']) / 100
                     data['report'] = 'fw_hydayelec_v1'
                     data['device'][0]['start'] = timeNow.strftime("%Y-%m-01_00:00:00")
@@ -177,9 +177,6 @@ class IHC8342BSensor(Entity):
                 elif len(re_json['table'][0]['values']) == 1:
                     self._eleMonth = float(re_json['table'][0]['values'][0]['elec']) / 100
 
-                else:
-                    self._eleMonth = round(float(re_json['table'][0]['values'][-1]['elec']) / 100 - float(
-                        re_json['table'][0]['values'][0]['elec']) / 100, 2)
                 self._state = self._eleMonth
                 self._dataTime = str(re_json['table'][0]['values'][0]['occurtime']).split("_")[0] + " - " + str(
                     re_json['table'][0]['values'][-1]['occurtime']).split("_")[0]

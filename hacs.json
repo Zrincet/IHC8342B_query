@@ -1,0 +1,6 @@
+ {
+  "name": "IHC8342B_query",
+  "country": "CN",
+  "render_readme": true,
+  "domains": ["sensor"]
+}

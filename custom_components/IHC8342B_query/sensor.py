@@ -66,21 +66,21 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
 class IHC8342BSensor(Entity):
     def __init__(self, mac_user_input, name, price, option):
         self._macUserInput = mac_user_input
-        self._state = None
+        self._state = 0.0
         self._mac = str(mac_user_input).replace(":", "").replace("：", "").lower()
         self._price = float(price)
 
-        self._eleTotal = None
-        self._eleToday = None
-        self._eleMonth = None
-        self._eleYear = None
+        self._eleTotal = 0.0
+        self._eleToday = 0.0
+        self._eleMonth = 0.0
+        self._eleYear = 0.0
 
         self._startTime = None
         self._endTime = None
 
-        self._power = None
-        self._dataTime = None
-        self._updateTime = None
+        self._power = 0.0
+        self._dataTime = 'None'
+        self._updateTime = 'None'
 
         self._object_id = OPTIONS[option][0]
         self._friendly_name = str(name) + '_' + OPTIONS[option][1]

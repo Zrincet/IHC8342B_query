@@ -1,10 +1,12 @@
 {
   "domain": "IHC8342B_query",
   "name": "IHC8342B electricity query",
+  "version": "1.1.3",
   "documentation": "https://github.com/zrincet/IHC8342B_query",
   "requirements": [],
   "dependencies": [],
   "codeowners": [
     "@zrincet"
-  ]
+  ],
+  "iot_class": "cloud_polling"
 }

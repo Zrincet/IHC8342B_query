@@ -1,6 +1,10 @@
 # IHC8342B_query
  Home Assistant plugin
 
+
+## 2024-05-02
+@felipediel 大佬继续维护python-broadlink仓库，0.19.0版本已经合并我提交的代码，并在今天Home Assistant的2024.5.0版本正式将python-broadlink版本升级至0.19.0，至此鸿雁 IHC8342B 的电压/电流/功率/总用电量可以通过官方插件直接读取！本仓库历史使命已完成！
+
 ## 2022-09-02 提示
 **鸿雁公司以鸿雁智控APP的服务器因护网行动为由，将查询电量计量功能接口关闭，导致此插件失效！**
 
